@@ -1,1 +1,1 @@
-export { ProkeyLink } from "./ProkeyLink"
+export { ProkeyLink } from './ProkeyLink';
