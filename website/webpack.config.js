@@ -6,7 +6,12 @@
 
 const path = require('path');
 const BrowserSyncPlugin = require('browser-sync-webpack-plugin')
- 
+const CopyWebpackPlugin = require('copy-webpack-plugin');
+
+function resolvePath(dir) {
+  return path.join(__dirname, '..', dir);
+}
+
 module.exports = {
   // which files should webpack watch and transpile
   entry: ['./src/index.htm', './src/scss/styles.scss', './src/js/index.ts'],
@@ -29,7 +34,7 @@ module.exports = {
       test: /.htm(l*)/,
       use:
       {
-        loader: 'file-loader',
+        loader: 'file-loader',        
         options: {
           name: '[name].[ext]'
         }
@@ -70,6 +75,25 @@ module.exports = {
       files: ["*.htm", "*.html", "scss/*.*"],
       index: 'index.htm',
       server: { baseDir: ['dist'] }
-    })
+    }),
+    new CopyWebpackPlugin({
+      patterns: [
+        {
+          noErrorOnMissing: true,
+          from: resolvePath('website/src/static'),
+          to: resolvePath('website/dist/static'),
+        },
+        {
+          noErrorOnMissing: false,
+          from: resolvePath('website/node_modules/@prokey-io/webcore/protob/combined.proto.txt'),
+          to: resolvePath('website/dist/assets/data/protob/combined.proto.txt'),
+        },
+        {
+          noErrorOnMissing: false,
+          from: resolvePath('website/node_modules/@prokey-io/webcore/protob/google/protobuf/descriptor.proto.txt'),
+          to: resolvePath('website/dist/assets/data/protob/google/protobuf/descriptor.proto.txt'),
+        },
+      ],
+    }),
   ]
 };
