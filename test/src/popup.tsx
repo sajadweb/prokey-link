@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom";
+import { ProkeyLink } from "link";
 
 const Popup = () => {
   const [count, setCount] = useState(0);
@@ -15,7 +16,9 @@ const Popup = () => {
     });
   }, []);
 
-  const changeBackground = () => {
+  const changeBackground = async () => {
+    let p = new ProkeyLink();
+    await p.Connect();
     chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
       const tab = tabs[0];
       if (tab.id) {
