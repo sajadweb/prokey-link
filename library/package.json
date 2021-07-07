@@ -36,6 +36,7 @@
   },
   "homepage": "https://github.com/prokey-io/prokey-link#readme",
   "devDependencies": {
+    "@types/chrome": "0.0.143",
     "@types/jest": "^26.0.23",
     "jest": "^27.0.6",
     "prettier": "^2.3.2",
