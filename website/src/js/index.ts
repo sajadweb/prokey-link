@@ -1,10 +1,17 @@
 import * as $ from "jquery"
-import { Device } from "@prokey-io/webcore"
+import { ConnectionMgr } from "./ConnectionMgr";
+import { DeviceMgr } from "./DeviceMgr";
 
-function onConnect(): void {    
-    var dev = new Device();
-    dev.TransportConnect();
-    console.log("clicked");
-} 
+var _deviceMgr: DeviceMgr = new DeviceMgr();
+var _connectionMgr: ConnectionMgr = new ConnectionMgr(_deviceMgr);
 
-$("#connect_button").on("click", onConnect);  
+async function onConnect() {
+    await _deviceMgr.Connect();
+    $("#connect_button").fadeOut(100);
+}
+
+// when the page is ready
+jQuery(function () {
+    $("#connect_button").on("click", onConnect);
+
+});

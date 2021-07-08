@@ -12,6 +12,7 @@
   "author": "Ebbe Vang, evang.dk",
   "license": "ISC",
   "devDependencies": {
+    "@types/chrome": "0.0.146",
     "@types/jquery": "^3.5.5",
     "browser-sync": "^2.27.4",
     "browser-sync-webpack-plugin": "^2.2.2",
