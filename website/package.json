@@ -4,9 +4,9 @@
   "description": "A starter template for webdevelopment",
   "main": "index.js",
   "scripts": {
-    "webpack:dev": "node_modules\\.bin\\webpack --mode=development",
-    "webpack:prod": "node_modules\\.bin\\webpack --mode=production",
-    "watch": "node_modules\\.bin\\webpack --mode=development --watch",
+    "webpack:dev": "node_modules/.bin/webpack --mode=development",
+    "webpack:prod": "node_modules/.bin/webpack --mode=production",
+    "watch": "node_modules/.bin/webpack --mode=development --watch",
     "serve": "node_modules\\.bin\\http-server dist/ -g -o"
   },
   "author": "Ebbe Vang, evang.dk",

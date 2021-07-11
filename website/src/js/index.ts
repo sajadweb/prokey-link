@@ -6,12 +6,12 @@ var _deviceMgr: DeviceMgr = new DeviceMgr();
 var _connectionMgr: ConnectionMgr = new ConnectionMgr(_deviceMgr);
 
 async function onConnect() {
+    // console.log('index  onConnect')
     await _deviceMgr.Connect();
     $("#connect_button").fadeOut(100);
 }
 
 // when the page is ready
-jQuery(function () {
+$(function () {
     $("#connect_button").on("click", onConnect);
-
 });

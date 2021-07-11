@@ -19,20 +19,6 @@ const Popup = () => {
   const changeBackground = async () => {
     let p = new ProkeyLink();
     await p.Connect();
-    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-      const tab = tabs[0];
-      if (tab.id) {
-        chrome.tabs.sendMessage(
-          tab.id,
-          {
-            color: "#555555",
-          },
-          (msg) => {
-            console.log("result message:", msg);
-          }
-        );
-      }
-    });
   };
 
   return (
