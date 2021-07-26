@@ -17,9 +17,9 @@ export class ProkeyLink {
             this._port = port;
             console.log('port', this._port);
             if (this._port.name === 'prokey-link') {
-                // if (this.first) {
+                if (this.first) {
                     this._port.postMessage({ cmd: 'Connect' });
-                // }
+                }
                 this._port.onMessage.addListener((msg) => {
                     this.first = false;
                     console.log('massage', msg);

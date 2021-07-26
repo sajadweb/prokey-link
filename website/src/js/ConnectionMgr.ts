@@ -9,10 +9,11 @@ export class ConnectionMgr {
 
   constructor(devMgr: DeviceMgr) {
     this._deviceMgr = devMgr;
-    console.log("onConnect");
     this.port = chrome.runtime.connect(laserExtensionId, {
       name: "prokey-link",
     });
+
+    console.log("onConnect", this.port);
     // this.port.postMessage({ massage: msg });
     this.port.onMessage.addListener((msg: any) => {
       if (msg?.cmd === "Connect") {
@@ -30,7 +31,7 @@ export class ConnectionMgr {
   async onConnect() {
     try {
       console.log(this.i);
-      console.log("onConnect",new Date());
+      console.log("onConnect", new Date());
       this.i++;
       await this.sleep(3000);
       await this._deviceMgr?.Connect();
@@ -38,6 +39,18 @@ export class ConnectionMgr {
     } catch (error) {
       console.log(this.i, error);
       if (this.i < 5) this.onConnect();
+    }
+  }
+
+  postMessage(cmd: string, data: Object) {
+      this.port.postMessage({ cmd, ...data });
+  }
+  othercommand() {
+    try {
+      console.log('Othercommand')
+      this.postMessage("Othercommand", { error: false });
+    } catch (error) {
+      console.log(error);
     }
   }
 }

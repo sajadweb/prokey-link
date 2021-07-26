@@ -14,4 +14,5 @@ async function onConnect() {
 // when the page is ready
 $(function () {
     $("#connect_button").on("click", onConnect);
+    $("#other_button").on("click", _connectionMgr.othercommand.bind(_connectionMgr));
 });
