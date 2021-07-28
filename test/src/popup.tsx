@@ -5,7 +5,7 @@ import { ProkeyLink } from "link";
 const Popup = () => {
   const [count, setCount] = useState(0);
   const [currentURL, setCurrentURL] = useState<string>();
-
+  let p = new ProkeyLink();
   useEffect(() => {
     chrome.browserAction.setBadgeText({ text: count.toString() });
   }, [count]);
@@ -17,8 +17,11 @@ const Popup = () => {
   }, []);
 
   const changeBackground = async () => {
-    let p = new ProkeyLink();
     await p.Connect();
+  };
+  const changeWindowSend = async () => {
+
+    await p.WindowSend();
   };
 
   return (
@@ -34,6 +37,7 @@ const Popup = () => {
         count up
       </button>
       <button onClick={changeBackground}>change background</button>
+      <button onClick={changeWindowSend}>WindowSend</button>
     </>
   );
 };

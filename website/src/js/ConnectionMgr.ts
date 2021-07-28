@@ -35,7 +35,7 @@ export class ConnectionMgr {
       this.i++;
       await this.sleep(3000);
       await this._deviceMgr?.Connect();
-      $("#connect_button").fadeOut(100);
+     // $("#connect_button").fadeOut(100);
     } catch (error) {
       console.log(this.i, error);
       if (this.i < 5) this.onConnect();

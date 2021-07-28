@@ -1,0 +1,29 @@
+{
+  "name": "prokey-link",
+  "version": "1.0.0",
+  "description": "link web application to talk with prokey.io hardware wallet",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "start": "concurrently \"npm run lib\" \"npm run test\" \"npm run website\"",
+    "lib": "cd library && npm run watch",
+    "test": "cd test && npm run watch",
+    "website": "cd website && npm run watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sajadweb/prokey-link.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sajadweb/prokey-link/issues"
+  },
+  "homepage": "https://github.com/sajadweb/prokey-link#readme",
+  "dependencies": {
+    "concurrently": "^6.2.0"
+  }
+}
