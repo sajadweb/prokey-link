@@ -20,7 +20,6 @@ const Popup = () => {
     await p.Connect();
   };
   const changeWindowSend = async () => {
-
     await p.WindowSend();
   };
 

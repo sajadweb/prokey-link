@@ -1,7 +1,28 @@
 import { Device, EthereumCommands } from "@prokey-io/webcore";
-import { Command, EthereumTx, Message } from "./interface";
-import { log } from "./utils";
-
+export interface BitcoinTx {
+  coinName: string;
+  inputs: Array<any>;
+  outputs: Array<any>;
+  refTxs?: Array<any>;
+  options: any;
+}
+export declare type EthereumTx = {
+  address_n: Array<number>;
+  to: string;
+  value: string;
+  gasPrice: string;
+  gasLimit: string;
+  nonce: string;
+  data?: string;
+  chainId?: number;
+  txType?: number;
+  v?: string;
+  r?: string;
+  s?: string;
+};
+const log=(lable:string,color='green')=>{
+  console.log(`%c ${lable}`, `color:${color};`);
+}
 /// Device manager class
 export class DeviceMgr {
   private _connected: boolean = false;
@@ -11,12 +32,7 @@ export class DeviceMgr {
 
   constructor() {
     this.EventListener = this.EventListener.bind(this);
-    this.initialEventListener = this.initialEventListener.bind(this);
-    this.postMessage = this.postMessage.bind(this);
-    this.initialEventListener();
     log("DeviceMgr initial.");
-  }
-  async initialEventListener() {
     window.addEventListener(
       "message",
       (event: any) => {
@@ -27,57 +43,20 @@ export class DeviceMgr {
       false
     );
   }
-  async EventListener(message: Message) {
-    log(`Listener command=${message?.command}`);
-    switch (message.command) {
-      case Command.GET_DEVICE_ID: {
-        this.postMessage(Command.GET_DEVICE_ID, { message: "recived" });
-        break;
-      }
-      case Command.INITIAL: {
-        break;
-      }
-    }
+  async EventListener(data: { command: string }) {
+     log('EventListener v1 data=');
+     log(JSON.stringify(data));
   }
-  /**
-   * Data to be sent to the other window.
-   * @param command
-   * @param data
-   */
-  postMessage(command: Message["command"], data?: Message["data"]): void {
-    log(command + JSON.stringify(data));
-    this._source?.postMessage({ command, data }, "*");
-  }
-
-  /**
-   * Connect to prokey
-   * @returns
-   */
   async Connect() {
-    log("Connect start");
-    if (this._connected) {
-      this.postMessage(Command.INITIAL, { connect: true });
-      return;
-    }
-    if (!this._device) {
+    if (this._connected) return;
+    if (this._device == null) {
       this._device = new Device();
     }
     const res = await this._device.TransportConnect();
-    if (!res.success) {
-      this.postMessage(Command.INITIAL, {
-        connect: false,
-        error: res.errorMessage,
-      });
-      throw new Error(res.errorMessage);
-    }
-    this.postMessage(Command.INITIAL, { connect: true });
+    if (!res.success) throw new Error(res.errorMessage);
+    this.eth = new EthereumCommands();
   }
-  //#region command
-  
-  /**
-   * check connect prokey device
-   * @returns boolean
-   */
+//#region command
   IsConnected(): boolean {
     return this._connected;
   }
@@ -96,7 +75,7 @@ export class DeviceMgr {
    * @param path BIP path
    * @param showOnProkey true means show the address on device display
    */
-  getEthAddress() {
+  getAddress() {
     return this.eth.GetAddress(this._device, []);
   }
   /**
