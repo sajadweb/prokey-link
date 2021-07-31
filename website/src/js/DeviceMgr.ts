@@ -1,52 +1,26 @@
 import { Device, EthereumCommands } from "@prokey-io/webcore";
 import { Command, EthereumTx, Message } from "./interface";
-import { log } from "./utils";
+import { EventEmitter, log, sleep } from "./utils";
 
 /// Device manager class
-export class DeviceMgr {
+export class DeviceMgr extends EventEmitter {
   private _connected: boolean = false;
   private _device: Device | null;
-  private _source: any;
   private eth: EthereumCommands | null;
 
   constructor() {
-    this.EventListener = this.EventListener.bind(this);
-    this.initialEventListener = this.initialEventListener.bind(this);
-    this.postMessage = this.postMessage.bind(this);
-    this.initialEventListener();
+    super();
+    this.on(Command.GET_DEVICE_ID, async (res) => {
+      log(`Listener command=>${Command.GET_DEVICE_ID}`);
+      await sleep(3000);
+      this.responseMessage(Command.GET_DEVICE_ID, { response: true });
+    });
+    this.on(Command.INITIAL, async (res) => {
+      log(`Listener command=>${Command.GET_DEVICE_ID}`);
+      await sleep(9000);
+      this.responseMessage(Command.INITIAL, { response: true });
+    });
     log("DeviceMgr initial.");
-  }
-  async initialEventListener() {
-    window.addEventListener(
-      "message",
-      (event: any) => {
-        if (event.source === window) return;
-        this._source = event.source;
-        this.EventListener(event.data);
-      },
-      false
-    );
-  }
-  async EventListener(message: Message) {
-    log(`Listener command=${message?.command}`);
-    switch (message.command) {
-      case Command.GET_DEVICE_ID: {
-        this.postMessage(Command.GET_DEVICE_ID, { message: "recived" });
-        break;
-      }
-      case Command.INITIAL: {
-        break;
-      }
-    }
-  }
-  /**
-   * Data to be sent to the other window.
-   * @param command
-   * @param data
-   */
-  postMessage(command: Message["command"], data?: Message["data"]): void {
-    log(command + JSON.stringify(data));
-    this._source?.postMessage({ command, data }, "*");
   }
 
   /**
@@ -63,6 +37,7 @@ export class DeviceMgr {
       this._device = new Device();
     }
     const res = await this._device.TransportConnect();
+    console.log("TransportConnect ", res);
     if (!res.success) {
       this.postMessage(Command.INITIAL, {
         connect: false,
@@ -73,7 +48,7 @@ export class DeviceMgr {
     this.postMessage(Command.INITIAL, { connect: true });
   }
   //#region command
-  
+
   /**
    * check connect prokey device
    * @returns boolean

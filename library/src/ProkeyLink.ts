@@ -1,17 +1,14 @@
 import { Command, Message } from './interface';
-import { initialWindow, log, sleep } from './utils';
+import { EventEmitter, initialWindow, log, sleep } from './utils';
 import { getInformationLib } from './utils/info';
 
-export class ProkeyLink {
-    private _window?: Window | null;
+export class ProkeyLink extends EventEmitter {
     private _port: chrome.runtime.Port | null = null;
 
     constructor() {
+        super();
         this.WindowSend = this.WindowSend.bind(this);
         this.postMessage = this.postMessage.bind(this);
-        this.initialEventListener = this.initialEventListener.bind(this);
-        //initial EventListener
-        this.initialEventListener();
     }
 
     /**
@@ -19,24 +16,17 @@ export class ProkeyLink {
      */
     async Connect() {
         log('Connect...');
-        this._window = initialWindow();
+        const _window = initialWindow();
         await sleep(5000);
+        this.initializeEvent(_window);
         log('sleep...', 'blue');
-        this.postMessage(Command.INITIAL, getInformationLib());
+        const init = await this.postMessage(Command.INITIAL, getInformationLib());
+        console.log('initialize', init);
     }
 
     async WindowSend() {
-        this.postMessage(Command.GET_DEVICE_ID);
-    }
-
-    /**
-     *
-     * @param command
-     * @param data
-     */
-    postMessage(command: Message['command'], data?: Message['data']): void {
-        log(command + JSON.stringify(data));
-        this._window?.postMessage({ command, data }, '*');
+        const back = await this.postMessage(Command.GET_DEVICE_ID);
+        console.log('back', back);
     }
 
     async onConnectExternal() {
@@ -51,20 +41,5 @@ export class ProkeyLink {
                 });
             }
         });
-    }
-
-    /**
-     * EventListener
-     * window can listen for dispatched messages by executing the following JavaScript
-     */
-    initialEventListener(): void {
-        window?.addEventListener(
-            'message',
-            (event) => {
-                if (event.source === window) return;
-                log(JSON.stringify(event?.data),'red');
-            },
-            false,
-        );
     }
 }

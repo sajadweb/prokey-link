@@ -3,6 +3,7 @@ import { DeviceMgr } from "./DeviceMgr";
 
 // when the page is ready
 $(function () {
+ 
   var _deviceMgr: DeviceMgr = new DeviceMgr();
   async function onConnect() {
     await _deviceMgr.Connect();

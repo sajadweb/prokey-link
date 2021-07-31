@@ -1,4 +1,5 @@
-export * from './log';
+export * from "./log";
+export * from "./events";
 
 /**
  * Sleep
@@ -6,5 +7,5 @@ export * from './log';
  * @returns Promise
  */
 export function sleep(ms: number): Promise<any> {
-    return new Promise((resolve) => setTimeout(resolve, ms));
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
