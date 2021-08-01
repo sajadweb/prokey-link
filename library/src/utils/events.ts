@@ -1,6 +1,9 @@
 import * as Event from 'events';
 import { Message } from '../interface';
-
+/**
+ * Environment agnostic event emitter
+ * @description To port it to Browser or any other (non CJS) environment, use your favorite CJS bundler. No favorite yet? Try: Browserify, Webmake or Webpack
+ */
 export class EventEmitter extends Event {
     private source: any;
     constructor() {
