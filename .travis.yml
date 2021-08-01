@@ -8,9 +8,10 @@ branches:
 only:
   - feature/chrom-connect-command
 before_script:
-  - cd ./library  npm install
+  - cd ./library
+  - npm install
 script:
-  - cd ./library && npm run compodoc
+  - npm run compodoc
 deploy:
   provider: pages
   skip_cleanup: true
