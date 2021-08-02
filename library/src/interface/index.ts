@@ -15,11 +15,10 @@ export interface LibInformation {
 }
 
 /**
- * List Command
+ * Command is use for connect in the Prokey website
  */
-export enum Command{
-    INITIAL="initial",
-    GET_DEVICE_ID='get-device-id',
+export enum Command {
+    PING='ping',
     GET_ADDRESS = "get-address",
     GET_PUBLICK_KEY = "get-publick-key",
     SIGN_TRANSACTION = "sign-transaction",

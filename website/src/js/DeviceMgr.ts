@@ -14,13 +14,16 @@ export class DeviceMgr extends EventEmitter {
     super();
     this.on(Command.CONNECT, async (res) => {
       log("DeviceMgr connect.");
-      this.responseMessage(Command.CONNECT, { response: true });
+      this.responseMessage(Command.CONNECT, {response: true, connect: true,error: null});
     });
     //todo change after connect
     this.on(Command.INITIALIZE, async (res) => {
       const init = await this.initialize();
-      console.log("Initialize",init)
-      this.responseMessage(Command.INITIALIZE, { response: init });
+      this.responseMessage(Command.INITIALIZE, {  response: true, connect: true,error: null });
+    });
+    this.on(Command.PING, async (res) => { 
+      console.log(Command.PING)
+      this.responseMessage(Command.PING, {  response: true });
     });
     this.on(Command.GET_ADDRESS, async (res) => {
       const addresses = await this.getEthAddress();
@@ -45,11 +48,12 @@ export class DeviceMgr extends EventEmitter {
   async Connect() {
     log("Connect start");
     if (this._connected) {
-      // this.responseMessage(Command.CONNECT, { connect: true });
+      this.emit(Command.INITIALIZE);
       return;
     }
     if (!this._device) {
       this._device = new Device((res) => {
+        this._connected= true;
         this.emit(Command.INITIALIZE);
       });
       this._device.AddOnButtonRequestCallBack((res) => {
@@ -66,12 +70,12 @@ export class DeviceMgr extends EventEmitter {
       });
     }
     const res = await this._device.TransportConnect();
-    console.log("TransportConnect ", res);
     if (!res.success) {
-      this.responseMessage(Command.CONNECT, {
+      this.responseMessage(Command.INITIALIZE, {
         connect: false,
         error: res.errorMessage,
       });
+      this._connected= false;
       throw new Error(res.errorMessage);
     }
   }

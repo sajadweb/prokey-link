@@ -4,13 +4,11 @@ import { getInformationLib } from './utils/info';
 
 export class ProkeyLink extends EventEmitter {
     private _port: chrome.runtime.Port | null = null;
-
     constructor() {
         super();
-        this.WindowSend = this.WindowSend.bind(this);
-        this.postMessage = this.postMessage.bind(this);
+        this.Connect = this.Connect.bind(this);
+        this.Ping = this.Ping.bind(this);
     }
-
     /**
      * Connect Device Prokey
      */
@@ -19,15 +17,37 @@ export class ProkeyLink extends EventEmitter {
         const _window = initialWindow();
         await sleep(5000);
         this.initializeEvent(_window);
-        log('sleep...', 'blue');
-        const init = await this.postMessage(Command.INITIAL, getInformationLib());
-        console.log('initialize', init);
+        return await this.postMessage(Command.CONNECT, getInformationLib());
     }
 
-    async WindowSend() {
-        const back = await this.postMessage(Command.GET_DEVICE_ID);
-        console.log('back', back);
+    /**
+     * Ping Website
+     * @example
+     * ```js
+     * const lib = new ProkeyLink();
+     * lib.ping().then(pong=>{
+     *  console.log('pong :',pong)
+     * }).catch(error=>{
+     *  console.log('ping error:',error)
+     * })
+     * ```
+     * @returns The processed target boolean
+     */
+    Ping() {
+        console.log('start ping');
+        return this.postMessage(Command.PING);
     }
+
+    getAddress = async () => {
+        const back = await this.postMessage(Command.GET_ADDRESS);
+    };
+    getPublickKey = async () => {
+        const back = await this.postMessage(Command.GET_PUBLICK_KEY);
+    };
+
+    signTransaction = async () => {
+        const back = await this.postMessage(Command.SIGN_TRANSACTION);
+    };
 
     async onConnectExternal() {
         //TODO set for chrom extionsion

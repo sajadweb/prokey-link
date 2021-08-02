@@ -48,6 +48,7 @@ export class EventEmitter extends Event {
   };
 
   async EventListener(message: Message) {
+    console.log("message ",message)
     this.emit(message.command, message?.data);
   }
 }

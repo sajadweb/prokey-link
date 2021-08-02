@@ -2,6 +2,7 @@ import * as Event from 'events';
 import { Message } from '../interface';
 /**
  * Environment agnostic event emitter
+ * @ignore
  */
 export class EventEmitter extends Event {
     private source: any;

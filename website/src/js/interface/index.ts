@@ -18,6 +18,7 @@ export interface LibInformation {
  * List Command
  */
 export enum Command {
+  PING='ping',
   GET_ADDRESS = "get-address",
   GET_PUBLICK_KEY = "get-publick-key",
   SIGN_TRANSACTION = "sign-transaction",

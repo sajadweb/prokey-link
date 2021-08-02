@@ -5,7 +5,7 @@
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
-    "compodoc": "compodoc -p tsconfig.doc.json -n 'Prokey Link'  -d ../docs",
+    "compodoc": "compodoc -p tsconfig.doc.json -n 'Prokey Link' -d ../docs",
     "build": "tsc",
     "watch": "tsc-watch ",
     "format": "prettier --write \"src/**/*.ts\"",
@@ -40,7 +40,7 @@
   "devDependencies": {
     "@compodoc/compodoc": "^1.1.14",
     "@types/chrome": "0.0.143",
-    "@types/jest": "^26.0.23",
+    "@types/jest": "^26.0.24",
     "@types/pump": "^1.1.1",
     "jest": "^27.0.6",
     "prettier": "^2.3.2",
