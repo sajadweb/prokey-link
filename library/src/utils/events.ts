@@ -54,6 +54,7 @@ export class EventEmitter extends Event {
         this.source?.postMessage({ command, data }, '*');
     };
     async EventListener(message: Message) {
+        console.log(message.command, message?.data);
         this.emit(message.command, message?.data);
     }
 }

@@ -9,5 +9,10 @@ $(function () {
     await _deviceMgr.Connect();
     $("#connect_button").fadeOut(100);
   }
+  async function getEthAddress() {
+   const address= await _deviceMgr.getEthAddress();
+   console.log({address})
+  }
   $("#connect_button").on("click", onConnect);
+  $("#get_address_btn").on("click", getEthAddress);
 });

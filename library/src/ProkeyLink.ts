@@ -6,19 +6,19 @@ export class ProkeyLink extends EventEmitter {
     private _port: chrome.runtime.Port | null = null;
     constructor() {
         super();
-        this.Connect = this.Connect.bind(this);
-        this.Ping = this.Ping.bind(this);
+        this.on(Command.INITIALIZE, (res) => {
+            console.log(` ProkeyLink ${Command.INITIALIZE} =`, res);
+        });
     }
     /**
      * Connect Device Prokey
      */
-    async Connect() {
-        log('Connect...');
+    Connect = async () => {
         const _window = initialWindow();
         await sleep(5000);
         this.initializeEvent(_window);
         return await this.postMessage(Command.CONNECT, getInformationLib());
-    }
+    };
 
     /**
      * Ping Website
@@ -33,14 +33,25 @@ export class ProkeyLink extends EventEmitter {
      * ```
      * @returns The processed target boolean
      */
-    Ping() {
-        console.log('start ping');
+    Ping = () => {
         return this.postMessage(Command.PING);
-    }
-
-    getAddress = async () => {
-        const back = await this.postMessage(Command.GET_ADDRESS);
     };
+
+    /**
+     * Initialize Device
+     * @param fn 
+     */
+    AddGetInitialize = (fn: (res: any) => void): void => {
+        this.on(Command.INITIALIZE, fn);
+    };
+   
+    /**
+     * Get Address
+     * @returns 
+     */
+    GetAddress = async () => {
+       return await this.postMessage(Command.GET_ADDRESS,{type: "Ethereum"});
+    }; 
     getPublickKey = async () => {
         const back = await this.postMessage(Command.GET_PUBLICK_KEY);
     };
