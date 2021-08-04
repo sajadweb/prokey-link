@@ -58,12 +58,27 @@ const Popup = () => {
   const getEthAddress = async () => {
     try {
       setLoading(true);
-      const address = await p.GetAddress();
+      const address = await p.GetAddress("Ethereum", {
+        coinBip44: 60, account: 0, numberOfAddress: 1, isSegwit: false, isChange: false, startIndex: 0
+      }, true);
       setLoading(false);
       onSuccess('getEthAddress =' + JSON.stringify(address))
     } catch (error) {
       setLoading(false);
       onError(`getEthAddress error= ${error}`)
+    }
+  };
+  const getBitcoinAddress = async () => {
+    try {
+      setLoading(true);
+      const address = await p.GetAddress("Bitcoin", {
+        coinBip44: 0, account: 0, numberOfAddress: 1, isSegwit: true, isChange: false, startIndex: 0
+      }, true);
+      setLoading(false);
+      onSuccess('getBitcoinAddress =' + JSON.stringify(address))
+    } catch (error) {
+      setLoading(false);
+      onError(`getBitcoinAddress error= ${error}`)
     }
   };
 
@@ -90,6 +105,7 @@ const Popup = () => {
       <button style={{ margin: "5px" }} onClick={connectProkey}>Connect to the Prokey website</button>
       <button style={{ margin: "5px" }} onClick={ping}>Ping</button>
       <button style={{ margin: "5px" }} onClick={getEthAddress}>get Eth Address</button>
+      <button style={{ margin: "5px" }} onClick={getBitcoinAddress}>get Bitcoin Address</button>
     </>
   );
 };

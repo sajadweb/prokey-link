@@ -1,17 +1,19 @@
 import { Device, EthereumCommands } from "@prokey-io/webcore";
 import { Features } from "@prokey-io/webcore/dist/src/models/Prokey";
-import { Command, EthereumTx, Message } from "./interface";
-import { EventEmitter, log, sleep } from "./utils";
-import * as PathUtil from '@prokey-io/webcore/dist/src/utils/pathUtils';
+import { Command, ICoin, Message } from "./interface";
+import { Coin, EventEmitter, log, sleep } from "./utils";
+
 /// Device manager class
 export class DeviceMgr extends EventEmitter {
   private _connected: boolean = false;
   private _device: Device | null;
   private _initialize: Features;
   private eth: EthereumCommands | null;
+  private coin: ICoin;
 
   constructor() {
     super();
+    this.coin = new Coin();
     this.on(Command.CONNECT, async (res) => {
       log("DeviceMgr connect.");
       this.responseMessage(Command.CONNECT, {
@@ -24,9 +26,9 @@ export class DeviceMgr extends EventEmitter {
     this.on(Command.INITIALIZE, async (res) => {
       console.log("Command.INITIALIZE", Command.INITIALIZE);
       this._initialize = await this.initialize();
-      console.log("init", this._initialize );
+      console.log("init", this._initialize);
       this.responseMessage(Command.INITIALIZE, {
-        response: this._initialize , 
+        response: this._initialize,
         error: null,
       });
     });
@@ -34,8 +36,9 @@ export class DeviceMgr extends EventEmitter {
       console.log(Command.PING);
       this.responseMessage(Command.PING, { response: true });
     });
-    this.on(Command.GET_ADDRESS, async (res) => {
-      const addresses = await this.getEthAddress();
+    this.on(Command.GET_ADDRESS, async (res:any) => {
+      console.log('address',res)
+      const addresses = await this.getAddress(res);
       this.responseMessage(Command.GET_ADDRESS, { response: addresses });
     });
     // this.on(Command.GET_PUBLICK_KEY, async (res) => {
@@ -66,17 +69,22 @@ export class DeviceMgr extends EventEmitter {
         this._connected = true;
         this.emit(Command.INITIALIZE);
       });
-      this._device.AddOnButtonRequestCallBack((res) => {
-        console.log("AddOnButtonRequestCallBack", res);
-      });
       this._device.AddOnFailureCallBack((res) => {
-        console.log("AddOnFailureCallBack", res);
+        if (confirm("Device not initialized!!!.\n Pleas rebot now?")) {
+          this._device.RebootDevice();
+        }
       });
-      this._device.AddOnPasspharaseRequestCallBack(() => {
-        console.log("AddOnPasspharaseRequestCallBack");
-      });
+      // this._device.AddOnButtonRequestCallBack((res) => {
+      //   console.log("AddOnButtonRequestCallBack", res);
+      // });
+      // this._device.AddOnFailureCallBack((res) => {
+      //   console.log("AddOnFailureCallBack", res);
+      // });
+      // this._device.AddOnPasspharaseRequestCallBack(() => {
+      //   console.log("AddOnPasspharaseRequestCallBack");
+      // });
       this._device.AddOnDeviceDisconnectCallBack(() => {
-        console.log("AddOnDeviceDisconnectCallBack");
+        this.emit(Command.DISCONNECT);
       });
     } else {
       this.emit(Command.INITIALIZE);
@@ -102,6 +110,9 @@ export class DeviceMgr extends EventEmitter {
   IsConnected(): boolean {
     return this._connected;
   }
+  Disconnect(fn: () => void): void {
+    this.on(Command.DISCONNECT, fn);
+  }
 
   /**
    * Reset device to default state and ask for device details
@@ -116,16 +127,9 @@ export class DeviceMgr extends EventEmitter {
    * @param path BIP path
    * @param showOnProkey true means show the address on device display
    */
-  getEthAddress = () => {
-    this.eth=new EthereumCommands();
-    let path = PathUtil.GetListOfBipPath(
-      60,                 
-      0,                      // Ethereum, each address is considered as an account
-      1,                      // We only need an address
-      false,                  // Segwit not defined so we should use 44'
-      false,                  // No change address defined in ethereum
-      0);
-    return this.eth.GetAddress(this._device, path[0].path, true);
+  getAddress = async (param: any) => {
+    const { coin, ...args } = param;
+    return this.coin.GetAddress(this._device, param.coin, args);
   };
   /**
    * Get Public key
@@ -141,7 +145,7 @@ export class DeviceMgr extends EventEmitter {
    * @param device Prokey device instance
    * @param bitcoinTransaction transaction to be signed
    */
-  signTransaction = (ethTx: EthereumTx) => {
+  signTransaction = (ethTx: any) => {
     return this.eth.SignTransaction(this._device, ethTx);
   };
   //#endregion

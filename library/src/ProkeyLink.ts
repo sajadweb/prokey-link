@@ -1,4 +1,4 @@
-import { Command, Message } from './interface';
+import { CoinGetAddresParam, CoinType, Command, Message } from './interface';
 import { EventEmitter, initialWindow, log, sleep } from './utils';
 import { getInformationLib } from './utils/info';
 
@@ -39,19 +39,33 @@ export class ProkeyLink extends EventEmitter {
 
     /**
      * Initialize Device
-     * @param fn 
+     * @param fn
      */
     AddGetInitialize = (fn: (res: any) => void): void => {
         this.on(Command.INITIALIZE, fn);
     };
-   
+
     /**
-     * Get Address
-     * @returns 
+     * Get Address Coin
+     * @param coin
+     * @param args
+     * @param showOnProkey
+     * @returns Address Coin
      */
-    GetAddress = async () => {
-       return await this.postMessage(Command.GET_ADDRESS,{type: "Ethereum"});
-    }; 
+    GetAddress = async (coin: CoinType, args: CoinGetAddresParam, showOnProkey?: boolean) => {
+        return await this.postMessage(Command.GET_ADDRESS, {
+            coin,
+            showOnProkey,
+            args: [
+                args.coinBip44,
+                args.account, // Ethereum, each address is considered as an account
+                args.numberOfAddress, // We only need an address
+                args.isSegwit, // Segwit not defined so we should use 44'
+                args.isChange || false, // No change address defined in ethereum
+                args.startIndex,
+            ],
+        });
+    };
     getPublickKey = async () => {
         const back = await this.postMessage(Command.GET_PUBLICK_KEY);
     };
