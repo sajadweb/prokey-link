@@ -51,6 +51,13 @@ export class ProkeyLink extends EventEmitter {
      * @param args
      * @param showOnProkey
      * @returns Address Coin
+     * @example
+     * ```js
+     *  const address = await prokeyLink.GetAddress("Ethereum", {
+        coinBip44: 60, account: 0, numberOfAddress: 1, isSegwit: false, isChange: false, startIndex: 0
+      }, true);
+     * 
+     * ```
      */
     GetAddress = async (coin: CoinType, args: CoinGetAddresParam, showOnProkey?: boolean) => {
         return await this.postMessage(Command.GET_ADDRESS, {
