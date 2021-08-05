@@ -31,9 +31,9 @@ export enum Command {
 export type CoinType = 'Ethereum' | 'Bitcoin';
 
 /**
- * CoinGetAddresParam
+ * CoinPathParam
  */
-export interface CoinGetAddresParam {
+export interface CoinPathParam {
     coinBip44: number;
     // Ethereum, each address is considered as an account
     account: number;

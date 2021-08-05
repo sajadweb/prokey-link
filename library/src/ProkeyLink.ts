@@ -1,4 +1,4 @@
-import { CoinGetAddresParam, CoinType, Command, Message } from './interface';
+import { CoinPathParam, CoinType, Command, Message } from './interface';
 import { EventEmitter, initialWindow, log, sleep } from './utils';
 import { getInformationLib } from './utils/info';
 
@@ -12,6 +12,7 @@ export class ProkeyLink extends EventEmitter {
     }
     /**
      * Connect Device Prokey
+     * @description calls connectHardware in background
      */
     Connect = async () => {
         const _window = initialWindow();
@@ -31,7 +32,7 @@ export class ProkeyLink extends EventEmitter {
      *  console.log('ping error:',error)
      * })
      * ```
-     * @returns The processed target boolean
+     * @return The processed target boolean
      */
     Ping = () => {
         return this.postMessage(Command.PING);
@@ -39,7 +40,7 @@ export class ProkeyLink extends EventEmitter {
 
     /**
      * Initialize Device
-     * @param fn
+     * @param fn it is void function
      */
     AddGetInitialize = (fn: (res: any) => void): void => {
         this.on(Command.INITIALIZE, fn);
@@ -47,9 +48,10 @@ export class ProkeyLink extends EventEmitter {
 
     /**
      * Get Address Coin
-     * @param coin
-     * @param args
-     * @param showOnProkey
+     * @description Get Address coin in proky device
+     * @param coin CoinType;
+     * @param path String | CoinPathParam;
+     * @param showOnProkey Boolean;
      * @returns Address Coin
      * @example
      * ```js
@@ -58,23 +60,60 @@ export class ProkeyLink extends EventEmitter {
       }, true);
      * 
      * ```
+     * ```js
+     *  const address = await prokeyLink.GetAddress("Ethereum",'m/44'/60'/0'/0', true);
+     * 
+     * ```
      */
-    GetAddress = async (coin: CoinType, args: CoinGetAddresParam, showOnProkey?: boolean) => {
+    GetAddress = async (coin: CoinType, path: CoinPathParam | string, showOnProkey?: boolean) => {
         return await this.postMessage(Command.GET_ADDRESS, {
             coin,
             showOnProkey,
-            args: [
-                args.coinBip44,
-                args.account, // Ethereum, each address is considered as an account
-                args.numberOfAddress, // We only need an address
-                args.isSegwit, // Segwit not defined so we should use 44'
-                args.isChange || false, // No change address defined in ethereum
-                args.startIndex,
-            ],
+            path: typeof path === 'string' ? path : this.getPath(path),
         });
     };
-    getPublickKey = async () => {
-        const back = await this.postMessage(Command.GET_PUBLICK_KEY);
+    /**
+     * Get Path
+     * @ignore
+     * @param path 
+     * @returns Array
+     */
+    private getPath = (path: CoinPathParam) => {
+        return [
+            path.coinBip44,
+            path.account, // Ethereum, each address is considered as an account
+            path.numberOfAddress, // We only need an address
+            path.isSegwit, // Segwit not defined so we should use 44'
+            path.isChange || false, // No change address defined in ethereum
+            path.startIndex,
+        ];
+    };
+
+     /**
+     * Get PublickKey Coin
+     * @description Get PublickKey coin in proky device
+     * @param coin CoinType;
+     * @param path String | CoinPathParam;
+     * @param showOnProkey Boolean;
+     * @returns Address Coin
+     * @example
+     * ```js
+     *  const key = await prokeyLink.GetPublickKey("Ethereum",'m/44'/60'/0'/0', true);
+     * 
+     * ```
+     * ```js
+     *  const key = await prokeyLink.GetPublickKey("Ethereum", {
+        coinBip44: 60, account: 0, numberOfAddress: 1, isSegwit: false, isChange: false, startIndex: 0
+      }, true);
+     * 
+     * ```
+     */
+    GetPublickKey = async (coin: CoinType, path: CoinPathParam | string, showOnProkey?: boolean) => {
+        return await this.postMessage(Command.GET_PUBLICK_KEY, {
+            coin,
+            showOnProkey,
+            path: typeof path === 'string' ? path : this.getPath(path),
+        });
     };
 
     signTransaction = async () => {

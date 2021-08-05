@@ -37,42 +37,55 @@ export type CoinType = "Bitcoin" | "Ethereum";
 
 /**
  * IGetAddress
- * @param  coinBip44: number;
- * @param  account: number;
- * @param  numberOfAddress: number;
- * @param  isSegwit: boolean;
- * @param  isChange? boolean
- * @param  startIndex?: number;
+ * @param showOnProkey true means show the public key on prokey display
+ * @param path BIP path
  */
-export interface IGetAddressParam {
+export interface ICoinParam {
   showOnProkey?: boolean;
-  args?: [number, number, number, boolean, boolean?, number?];
+  coin: CoinType;
+  path: [number, number, number, boolean, boolean?, number?] | string;
 }
 export interface IGetAddressResponse {
   error: boolean;
   code?: number;
   message?: string | Object;
 }
+export interface IGetPublickKeyResponse {
+  error: boolean;
+  code?: number;
+  message?: string| Object | PublicKey;
+}
+export type HDPubNode = {
+  depth: number;
+  fingerprint: number;
+  child_num: number;
+  chain_code: string;
+  public_key: string;
+};
+export type PublicKey = {
+  node: HDPubNode;
+  xpub: string;
+};
 export interface ICoin {
   Bitcoin: ICoinCommands | null;
   Ethereum: ICoinCommands | null;
   // GetCoinInfo() : any;
+  /**
+   *
+   * @param device : Device;
+   * @param param : ICoinParam
+   */
   GetAddress(
     device: Device,
-    type: CoinType,
-    param: IGetAddressParam
+    param: ICoinParam
   ): Promise<IGetAddressResponse>;
 
-  // GetAddresses(
-  //     device: any,
-  //     path: Array<Array<number> | string>,
-  // ): Promise<any>;
-
-  // GetPublicKey(
-  //     device: any,
-  //     path: Array<number> | string,
-  //     showOnProkey?: boolean,
-  // ): Promise<any>;
+  /**
+   * Get Public key
+   * @param device The prokey device
+   * @param param ICoinParam
+   */
+  GetPublicKey(device: Device, param: ICoinParam): Promise<IGetPublickKeyResponse>;
 
   // SignTransaction(
   //     device: any,

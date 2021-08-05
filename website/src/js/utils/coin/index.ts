@@ -1,9 +1,9 @@
 import { Device, EthereumCommands, BitcoinCommands } from "@prokey-io/webcore";
 import {
-  CoinType,
   ICoin,
-  IGetAddressParam,
+  ICoinParam,
   IGetAddressResponse,
+  IGetPublickKeyResponse,
 } from "../../interface";
 import * as PathUtil from "@prokey-io/webcore/dist/src/utils/pathUtils";
 import { ICoinCommands } from "@prokey-io/webcore/dist/src/device/ICoinCommand";
@@ -36,12 +36,60 @@ export class Coin implements ICoin {
    */
   async GetAddress(
     device: Device,
-    type: CoinType,
-    param: IGetAddressParam
+    param: ICoinParam
   ): Promise<IGetAddressResponse> {
-    const coin = this[type];
-    let path = PathUtil.GetListOfBipPath(...param.args);
+    try {
+      const coin = this[param.coin];
+      const args = param.path;
+      let path: any;
+      if (typeof args === "string") {
+        path = PathUtil.getHDPath(args);
+      } else {
+        const list = PathUtil.GetListOfBipPath(...args);
+        path = list[0].path;
+      }
+      return new Promise(async (resolve) => {
+        if (!device) {
+          return resolve({
+            error: true,
+            message: "Device not initialized",
+          });
+        }
+        const addr = await coin.GetAddress(device, path, param.showOnProkey);
+        return resolve({
+          error: false,
+          message: addr,
+        });
+      });
+    } catch (error) {
+      return {
+        error: true,
+        message: error?.message,
+      };
+    }
+  }
 
+  /**
+   * Get Public key
+   * @param device The prokey device
+   * @param param ICoinParam
+   */
+  GetPublicKey(
+    device: Device,
+    param: ICoinParam
+  ): Promise<IGetPublickKeyResponse> {
+      console.log('GetPublicKey',{
+        param
+      })
+    const coin = this[param.coin];
+    const args = param.path;
+    let path: any;
+    if (typeof args === "string") {
+      path = PathUtil.getHDPath(args);
+    } else {
+      const list = PathUtil.GetListOfBipPath(...args);
+      path = list[0].path;
+    }
     return new Promise(async (resolve) => {
       if (!device) {
         return resolve({
@@ -49,15 +97,10 @@ export class Coin implements ICoin {
           message: "Device not initialized",
         });
       }
-      const addr = await coin.GetAddress(
-        device,
-        path[0].path,
-        param.showOnProkey
-      );
-      device.RemoveOnFailureCallBack(() => {});
+      const keys = await coin.GetPublicKey(device, path, param.showOnProkey);
       return resolve({
         error: false,
-        message: addr,
+        message: keys,
       });
     });
   }

@@ -1,7 +1,7 @@
 import { Device, EthereumCommands } from "@prokey-io/webcore";
 import { Features } from "@prokey-io/webcore/dist/src/models/Prokey";
-import { Command, ICoin, Message } from "./interface";
-import { Coin, EventEmitter, log, sleep } from "./utils";
+import { Command, ICoin, ICoinParam } from "./interface";
+import { Coin, EventEmitter, log } from "./utils";
 
 /// Device manager class
 export class DeviceMgr extends EventEmitter {
@@ -36,15 +36,15 @@ export class DeviceMgr extends EventEmitter {
       console.log(Command.PING);
       this.responseMessage(Command.PING, { response: true });
     });
-    this.on(Command.GET_ADDRESS, async (res:any) => {
-      console.log('address',res)
+    this.on(Command.GET_ADDRESS, async (res: any) => {
+      console.log("address", res);
       const addresses = await this.getAddress(res);
       this.responseMessage(Command.GET_ADDRESS, { response: addresses });
     });
-    // this.on(Command.GET_PUBLICK_KEY, async (res) => {
-    //   const key = await this.getPublickKey();
-    //   this.responseMessage(Command.GET_PUBLICK_KEY, { response: key });
-    // });
+    this.on(Command.GET_PUBLICK_KEY, async (res) => {
+      const keys = await this.getPublickKey(res);
+      this.responseMessage(Command.GET_PUBLICK_KEY, { response: keys });
+    });
     // this.on(Command.SIGN_TRANSACTION, async (res) => {
     //   const signTransaction = await this.signTransaction(res.data);
     //   this.responseMessage(Command.SIGN_TRANSACTION, {
@@ -128,17 +128,18 @@ export class DeviceMgr extends EventEmitter {
    * @param showOnProkey true means show the address on device display
    */
   getAddress = async (param: any) => {
-    const { coin, ...args } = param;
-    return this.coin.GetAddress(this._device, param.coin, args);
+    return this.coin.GetAddress(this._device, param);
   };
   /**
    * Get Public key
+   * @param param ICoinParam{
    * @param device The prokey device
    * @param path BIP path
    * @param showOnProkey true means show the public key on prokey display
+   * }
    */
-  getPublickKey = () => {
-    return this.eth.GetPublicKey(this._device, []);
+  getPublickKey = (param: ICoinParam) => {
+    return this.coin.GetPublicKey(this._device, param);
   };
   /**
    * sign a transaction
