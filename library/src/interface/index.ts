@@ -39,7 +39,20 @@ export interface LibInformation {
 /** Coin type support */
 export type CoinType = 'Ethereum' | 'Bitcoin';
 
-/**  CoinPathParam */
+/**  CoinPathParam 
+ * @example
+ * ```ts
+ * const sample: CoinPathParam = {
+ *      coinBip44: 60, 
+ *      account: 0,
+ *      numberOfAddress: 1, 
+ *      isSegwit: false, 
+ *      isChange: false, 
+ *      startIndex: 0
+ *  }
+ * 
+ * ```
+*/
 export interface CoinPathParam {
     coinBip44: number;
     /** Ethereum, each address is considered as an account */
@@ -74,7 +87,21 @@ export type RippleTransaction = {
         destination_tag?: number;
     };
 };
-/** EthereumTx */
+/** EthereumTx 
+ * @example
+ * ```ts
+ * const sample: EthereumTx = {
+ *     to: "0x1678a085c290ebd122dc42cba69373b5953b831d",
+ *     gasPrice: "0x77359400",
+ *     gasLimit: "0x7b0d",
+ *     nonce: "0x4b",
+ *     value:
+"0x5f973e540f2d3c2f06d3725a626b75247593cb36477187ae07ecfe0a4db3cf57",
+ *     address_n: ["0x1075EcD44063f7ffccE06df09763AEeefD9503e6"],
+ *  }
+ * 
+ * ```
+*/
 export type EthereumTx = {
     address_n: Array<number>;
     to: string;
