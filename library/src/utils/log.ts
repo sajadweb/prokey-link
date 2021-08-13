@@ -1,5 +1,6 @@
 /**
  * Log Console
+ * @ignore
  * @param lable 
  * @param color 
  */

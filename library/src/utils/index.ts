@@ -6,6 +6,7 @@ export * from './events';
 
 /**
  * Sleep
+ * @ignore
  * @param ms : Millisecond;
  * @returns Promise
  */

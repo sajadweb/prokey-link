@@ -1,8 +1,11 @@
-import { CoinPathParam, CoinType, Command, Message } from './interface';
+import { CoinPathParam, CoinType, Command, ICoinTransactionParam, Message } from './interface';
 import { EventEmitter, initialWindow, log, sleep } from './utils';
 import { getInformationLib } from './utils/info';
 
 export class ProkeyLink extends EventEmitter {
+    /**
+     * @ignore
+     */
     private _port: chrome.runtime.Port | null = null;
     constructor() {
         super();
@@ -16,7 +19,7 @@ export class ProkeyLink extends EventEmitter {
      */
     Connect = async () => {
         const _window = initialWindow();
-        await sleep(5000);
+        await sleep(3000);
         this.initializeEvent(_window);
         return await this.postMessage(Command.CONNECT, getInformationLib());
     };
@@ -40,6 +43,7 @@ export class ProkeyLink extends EventEmitter {
 
     /**
      * Initialize Device
+     * @ignore
      * @param fn it is void function
      */
     AddGetInitialize = (fn: (res: any) => void): void => {
@@ -75,7 +79,7 @@ export class ProkeyLink extends EventEmitter {
     /**
      * Get Path
      * @ignore
-     * @param path 
+     * @param path
      * @returns Array
      */
     private getPath = (path: CoinPathParam) => {
@@ -89,7 +93,7 @@ export class ProkeyLink extends EventEmitter {
         ];
     };
 
-     /**
+    /**
      * Get PublickKey Coin
      * @description Get PublickKey coin in proky device
      * @param coin CoinType;
@@ -116,10 +120,40 @@ export class ProkeyLink extends EventEmitter {
         });
     };
 
-    signTransaction = async () => {
-        const back = await this.postMessage(Command.SIGN_TRANSACTION);
+    /**
+     * Sign Transaction
+     * @description Sign Transaction
+     * @param {string} coin CoinType;
+     * @param {ICoinTransactionParam} transaction ICoinTransactionParam
+     * @returns ICoinTransactionParam
+     * @example
+     * ```js
+     *   const sample = {
+      to: "0x1678a085c290ebd122dc42cba69373b5953b831d",
+      gasPrice: "0x77359400",
+      gasLimit: "0x7b0d",
+      nonce: "0x4b",
+      value:
+        "0x5f973e540f2d3c2f06d3725a626b75247593cb36477187ae07ecfe0a4db3cf57",
+      address_n: ["0x1075EcD44063f7ffccE06df09763AEeefD9503e6"],
     };
-
+    const tr = await _deviceMgr.signTransaction({
+      coin: "Ethereum",
+      transaction: sample,
+    });
+     * 
+     * ```
+     */
+    SignTransaction = async (coin: CoinType, transaction: ICoinTransactionParam) => {
+        return await this.postMessage(Command.SIGN_TRANSACTION, {
+            coin,
+            transaction,
+        });
+    };
+    /**
+     * Connect External
+     * @ignore
+     */
     async onConnectExternal() {
         //TODO set for chrom extionsion
         chrome.runtime.onConnectExternal.addListener((port) => {

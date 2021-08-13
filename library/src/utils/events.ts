@@ -34,15 +34,16 @@ export class EventEmitter extends Event {
      * @param command
      * @param data
      */
-    postMessage = (command: Message['command'], data?: Message['data']): Promise<any> => {
+    postMessage = (command: Message['command'], data?: Message['data'], timeout?: number): Promise<any> => {
         this.source?.postMessage({ command, data }, '*');
         return new Promise((resolve, reject) => {
             this.on(command, (args) => {
                 resolve(args);
             });
-            setTimeout(function () {
-                reject('Timeout');
-            }, 5000);
+            if (timeout && timeout > 0)
+                setTimeout(function () {
+                    reject('Timeout');
+                }, timeout);
         });
     };
     /**
@@ -54,7 +55,6 @@ export class EventEmitter extends Event {
         this.source?.postMessage({ command, data }, '*');
     };
     async EventListener(message: Message) {
-        console.log(message.command, message?.data);
         this.emit(message.command, message?.data);
     }
 }

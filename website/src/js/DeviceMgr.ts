@@ -1,6 +1,6 @@
 import { Device, EthereumCommands } from "@prokey-io/webcore";
 import { Features } from "@prokey-io/webcore/dist/src/models/Prokey";
-import { Command, ICoin, ICoinParam } from "./interface";
+import { Command, FailureType, ICoin, ICoinParam } from "./interface";
 import { Coin, EventEmitter, log } from "./utils";
 
 /// Device manager class
@@ -14,20 +14,9 @@ export class DeviceMgr extends EventEmitter {
   constructor() {
     super();
     this.coin = new Coin();
-    this.on(Command.CONNECT, async (res) => {
-      log("DeviceMgr connect.");
+    this.on(Command.CONNECT, async (res) => { 
+      this._initialize = await this.initialize(); 
       this.responseMessage(Command.CONNECT, {
-        response: true,
-        connect: true,
-        error: null,
-      });
-    });
-    //todo change after connect
-    this.on(Command.INITIALIZE, async (res) => {
-      console.log("Command.INITIALIZE", Command.INITIALIZE);
-      this._initialize = await this.initialize();
-      console.log("init", this._initialize);
-      this.responseMessage(Command.INITIALIZE, {
         response: this._initialize,
         error: null,
       });
@@ -37,7 +26,6 @@ export class DeviceMgr extends EventEmitter {
       this.responseMessage(Command.PING, { response: true });
     });
     this.on(Command.GET_ADDRESS, async (res: any) => {
-      console.log("address", res);
       const addresses = await this.getAddress(res);
       this.responseMessage(Command.GET_ADDRESS, { response: addresses });
     });
@@ -45,55 +33,41 @@ export class DeviceMgr extends EventEmitter {
       const keys = await this.getPublickKey(res);
       this.responseMessage(Command.GET_PUBLICK_KEY, { response: keys });
     });
-    // this.on(Command.SIGN_TRANSACTION, async (res) => {
-    //   const signTransaction = await this.signTransaction(res.data);
-    //   this.responseMessage(Command.SIGN_TRANSACTION, {
-    //     response: signTransaction,
-    //   });
-    // });
+    this.on(Command.SIGN_TRANSACTION, async (res) => {
+      const signTransaction = await this.signTransaction(res);
+      this.responseMessage(Command.SIGN_TRANSACTION, {
+        response: signTransaction,
+      });
+    });
   }
 
   /**
    * Connect to prokey
    * @returns
    */
-  async Connect() {
-    log("Connect start");
-    // if (this._connected) {
-    //   this.emit(Command.INITIALIZE);
-    //   return;
-    // }
+  async Connect() { 
     if (!this._device) {
-      this._device = new Device((res) => {
-        console.log("device", res);
+      this._device = new Device((res) => { 
         this._connected = true;
-        this.emit(Command.INITIALIZE);
+        this.emit(Command.CONNECT);
       });
-      this._device.AddOnFailureCallBack((res) => {
-        if (confirm("Device not initialized!!!.\n Pleas rebot now?")) {
-          this._device.RebootDevice();
+      this._device.AddOnFailureCallBack((failureType) => {
+        if (
+          failureType &&
+          failureType.code === FailureType.Failure_NotInitialized
+        ) {
+          if (confirm("Device not initialized!!!.\n Pleas rebot now?")) {
+            this._device.RebootDevice();
+          }
         }
-      });
-      // this._device.AddOnButtonRequestCallBack((res) => {
-      //   console.log("AddOnButtonRequestCallBack", res);
-      // });
-      // this._device.AddOnFailureCallBack((res) => {
-      //   console.log("AddOnFailureCallBack", res);
-      // });
-      // this._device.AddOnPasspharaseRequestCallBack(() => {
-      //   console.log("AddOnPasspharaseRequestCallBack");
-      // });
+      }); 
       this._device.AddOnDeviceDisconnectCallBack(() => {
         this.emit(Command.DISCONNECT);
       });
-    } else {
-      this.emit(Command.INITIALIZE);
-    }
-    console.log("this._device", this._device);
-    const res = await this._device.TransportConnect();
-    console.log("this.TransportConnect", res);
+    }  
+    const res = await this._device.TransportConnect(); 
     if (!res.success) {
-      this.responseMessage(Command.INITIALIZE, {
+      this.responseMessage(Command.CONNECT, {
         connect: false,
         error: res.errorMessage,
       });
@@ -101,8 +75,6 @@ export class DeviceMgr extends EventEmitter {
       throw new Error(res.errorMessage);
     }
   }
-  //#region command
-
   /**
    * check connect prokey device
    * @returns boolean
@@ -146,8 +118,7 @@ export class DeviceMgr extends EventEmitter {
    * @param device Prokey device instance
    * @param bitcoinTransaction transaction to be signed
    */
-  signTransaction = (ethTx: any) => {
-    return this.eth.SignTransaction(this._device, ethTx);
+  signTransaction = (params: any) => {
+    return this.coin.SignTransaction(this._device, params);
   };
-  //#endregion
 }

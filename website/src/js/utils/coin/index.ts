@@ -2,6 +2,7 @@ import { Device, EthereumCommands, BitcoinCommands } from "@prokey-io/webcore";
 import {
   ICoin,
   ICoinParam,
+  ICoinTransactionParam,
   IGetAddressResponse,
   IGetPublickKeyResponse,
 } from "../../interface";
@@ -26,6 +27,32 @@ export class Coin implements ICoin {
   constructor() {
     this.Bitcoin = new BitcoinCommands();
     this.Ethereum = new EthereumCommands();
+  }
+
+  /**
+   * SignTransaction
+   * @param {Device} device
+   * @param {ICoinTransactionParam} param  
+   * @returns
+   */
+  async SignTransaction(
+    device: Device,
+    param: ICoinTransactionParam
+  ): Promise<any> {
+    try {
+      const coin = this[param.coin];
+      const transaction = param.transaction;
+      const message = await coin.SignTransaction(device, transaction);
+      return {
+        error: false,
+        message,
+      };
+    } catch (error) {
+      return {
+        error: true,
+        message: error?.message,
+      };
+    }
   }
   /**
    *
@@ -78,9 +105,6 @@ export class Coin implements ICoin {
     device: Device,
     param: ICoinParam
   ): Promise<IGetPublickKeyResponse> {
-      console.log('GetPublicKey',{
-        param
-      })
     const coin = this[param.coin];
     const args = param.path;
     let path: any;
