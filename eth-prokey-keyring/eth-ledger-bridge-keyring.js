@@ -2,11 +2,11 @@ const { EventEmitter } = require('events')
 const ethUtil = require('ethereumjs-util')
 const Transaction = require('ethereumjs-tx')
 const HDKey = require('hdkey')
-const { ProkeyLink } = require('./lib/prokey-link/library/lib')
+const { ProkeyLink } = require('../library/lib')
 const { TransactionFactory } = require('@ethereumjs/tx');
 // const ProkeyDevice = require('@prokey-io/webcore')
 
-const hdPathString = `m/44'/1'/0'/0`
+const hdPathString = `m/44'/60'/0'/0`
 // const hdPathString = `m/44'/60'/0'/0/0`
 const keyringType = 'Prokey Hardware'
 const pathBase = 'm'
@@ -225,6 +225,7 @@ class ProkeyKeyring extends EventEmitter {
   }
   // tx is an instance of the ethereumjs-transaction class.
   signTransaction(address, tx) {
+    let rawTxHex
     //TODO #prokey tx
     debugger;
     // transactions built with older versions of ethereumjs-tx have a
@@ -237,7 +238,13 @@ class ProkeyKeyring extends EventEmitter {
       // transaction which is only communicated to ethereumjs-tx in this
       // value. In newer versions the chainId is communicated via the 'Common'
       // object.
-      return this._signTransaction(address, tx.getChainId(), tx, (payload) => {
+      tx.v = ethUtil.bufferToHex(tx.getChainId())
+      tx.r = '0x00'
+      tx.s = '0x00'
+
+      rawTxHex = tx.serialize().toString('hex')
+
+      return this._signTransaction(address, rawTxHex, (payload) => {
         tx.v = Buffer.from(payload.v, 'hex');
         tx.r = Buffer.from(payload.r, 'hex');
         tx.s = Buffer.from(payload.s, 'hex');
@@ -253,18 +260,14 @@ class ProkeyKeyring extends EventEmitter {
     // forfeiting the benefit of immutability until this happens. We do still
     // return a Transaction that is frozen if the originally provided
     // transaction was also frozen.
-    const unfrozenTx = TransactionFactory.fromTxData(tx.toJSON(), {
-      common: tx.common,
-      freeze: false,
-    });
-    unfrozenTx.v = new ethUtil.BN(
-      ethUtil.addHexPrefix(tx.common.chainId()),
-      'hex',
-    );
+    const messageToSign = tx.getMessageToSign(false)
+debugger;
+    rawTxHex = Buffer.isBuffer(messageToSign)
+      ? messageToSign
+      : ethUtil.rlp.encode(messageToSign)
+    debugger
     return this._signTransaction(
-      address,
-      tx.common.chainIdBN().toNumber(),
-      unfrozenTx,
+      address, rawTxHex,
       (payload) => {
         //TODO #prokey r,v,s
         debugger
@@ -286,8 +289,10 @@ class ProkeyKeyring extends EventEmitter {
     );
   }
   // tx is an instance of the ethereumjs-transaction class.
-  async _signTransaction(address, chainId, tx, handleSigning) {
+  async _signTransaction(address, tx, handleSigning) {
     try {
+
+      debugger
       const status = await this.unlock();
       await wait(status === 'just unlocked' ? DELAY_BETWEEN_POPUPS : 0);
       const transaction = {
@@ -297,7 +302,8 @@ class ProkeyKeyring extends EventEmitter {
         chainId,
         nonce: this._normalize(tx.nonce),
         gasLimit: this._normalize(tx.gasLimit),
-        gasPrice: this._normalize(tx.gasPrice),
+        // gasPrice: this._normalize(tx.gasPrice),
+        gasPrice: this._normalize("0x69682f00")
       }
       const EthereumTx = {
         address_n: this._getHDPath(this._pathFromAddress(address)),
@@ -319,7 +325,6 @@ class ProkeyKeyring extends EventEmitter {
           ),
         );
         const correctAddress = ethUtil.toChecksumAddress(address);
-      //TODO #prokey comment
         // if (addressSignedWith !== correctAddress) {
         //   throw new Error("signature doesn't match the right address");
         // }
