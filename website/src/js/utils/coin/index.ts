@@ -1,4 +1,4 @@
-import { Device, EthereumCommands, BitcoinCommands } from "@prokey-io/webcore";
+import { Device, EthereumCommands, BitcoinCommands } from "../../../libs/prokey-webcore";
 import {
   ICoin,
   ICoinParam,
@@ -6,8 +6,8 @@ import {
   IGetAddressResponse,
   IGetPublickKeyResponse,
 } from "../../interface";
-import * as PathUtil from "@prokey-io/webcore/dist/src/utils/pathUtils";
-import { ICoinCommands } from "@prokey-io/webcore/dist/src/device/ICoinCommand";
+import * as PathUtil from "../../../libs/prokey-webcore/dist/src/utils/pathUtils";
+import { ICoinCommands } from "../../../libs/prokey-webcore/dist/src/device/ICoinCommand";
 declare function bind<T, U extends any[], V>(
   f: (x: T, ...args: U) => V,
   x: T

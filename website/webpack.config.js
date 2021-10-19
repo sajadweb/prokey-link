@@ -85,12 +85,12 @@ module.exports = {
         },
         {
           noErrorOnMissing: false,
-          from: resolvePath('website/node_modules/@prokey-io/webcore/protob/combined.proto.txt'),
+          from: resolvePath('src/libs/prokey-webcore/protob/combined.proto.txt'),
           to: resolvePath('website/dist/assets/data/protob/combined.proto.txt'),
         },
         {
           noErrorOnMissing: false,
-          from: resolvePath('website/node_modules/@prokey-io/webcore/protob/google/protobuf/descriptor.proto.txt'),
+          from: resolvePath('src/libs/prokey-webcore/protob/google/protobuf/descriptor.proto.txt'),
           to: resolvePath('website/dist/assets/data/protob/google/protobuf/descriptor.proto.txt'),
         },
       ],

@@ -1,8 +1,8 @@
-import { Device } from "@prokey-io/webcore";
-import { ICoinCommands } from "@prokey-io/webcore/dist/src/device/ICoinCommand";
-import { BitcoinTx } from "@prokey-io/webcore/dist/src/models/BitcoinTx";
-import { EthereumTx } from "@prokey-io/webcore/dist/src/models/EthereumTx";
-import { RippleTransaction } from "@prokey-io/webcore/dist/src/models/Prokey";
+import { Device } from "../../libs/prokey-webcore";
+import { ICoinCommands } from "../../libs/prokey-webcore/dist/src/device/ICoinCommand";
+import { BitcoinTx } from "../../libs/prokey-webcore/dist/src/models/BitcoinTx";
+import { EthereumTx } from "../../libs/prokey-webcore/dist/src/models/EthereumTx";
+import { RippleTransaction } from "../../libs/prokey-webcore/dist/src/models/Prokey";
 export { BitcoinTx, EthereumTx, RippleTransaction };
 export enum FailureType {
   Failure_UnexpectedMessage = 1,

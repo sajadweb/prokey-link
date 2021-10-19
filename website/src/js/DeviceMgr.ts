@@ -1,5 +1,5 @@
-import { Device, EthereumCommands } from "@prokey-io/webcore";
-import { Features } from "@prokey-io/webcore/dist/src/models/Prokey";
+import { Device, EthereumCommands } from "../libs/prokey-webcore";
+import { Features } from "../libs/prokey-webcore/dist/src/models/Prokey";
 import { Command, FailureType, ICoin, ICoinParam } from "./interface";
 import { Coin, EventEmitter, log } from "./utils";
 
