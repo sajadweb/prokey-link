@@ -6,6 +6,7 @@
   "scripts": {
     "webpack:dev": "node_modules/.bin/webpack --mode=development",
     "webpack:prod": "node_modules/.bin/webpack --mode=production",
+    "prewatch": "npm rebuild node-sass",
     "watch": "node_modules/.bin/webpack --mode=development --watch",
     "serve": "node_modules\\.bin\\http-server dist/ -g -o"
   },

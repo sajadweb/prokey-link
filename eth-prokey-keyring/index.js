@@ -2,11 +2,11 @@ const { EventEmitter } = require('events')
 const ethUtil = require('ethereumjs-util')
 const Transaction = require('ethereumjs-tx')
 const HDKey = require('hdkey')
-const { ProkeyLink } = require('./lib/prokey-link/library/lib')
+const { ProkeyLink } = require('../library/lib')
 const { TransactionFactory } = require('@ethereumjs/tx');
 // const ProkeyDevice = require('@prokey-io/webcore')
 
-const hdPathString = `m/44'/1'/0'/0`
+const hdPathString = `m/44'/60'/0'/0`
 // const hdPathString = `m/44'/60'/0'/0/0`
 const keyringType = 'Prokey Hardware'
 const pathBase = 'm'
