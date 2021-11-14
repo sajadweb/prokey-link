@@ -1,8 +1,8 @@
-import { Device } from "../../libs/prokey-webcore";
-import { ICoinCommands } from "../../libs/prokey-webcore/dist/src/device/ICoinCommand";
-import { BitcoinTx } from "../../libs/prokey-webcore/dist/src/models/BitcoinTx";
-import { EthereumTx } from "../../libs/prokey-webcore/dist/src/models/EthereumTx";
-import { RippleTransaction } from "../../libs/prokey-webcore/dist/src/models/Prokey";
+import { Device } from '../../libs/prokey-webcore';
+import { ICoinCommands } from '../../libs/prokey-webcore/dist/src/device/ICoinCommand';
+import { BitcoinTx } from '../../libs/prokey-webcore/dist/src/models/BitcoinTx';
+import { EthereumTx } from '../../libs/prokey-webcore/dist/src/models/EthereumTx';
+import { RippleTransaction } from '../../libs/prokey-webcore/dist/src/models/Prokey';
 export { BitcoinTx, EthereumTx, RippleTransaction };
 export enum FailureType {
   Failure_UnexpectedMessage = 1,
@@ -19,7 +19,7 @@ export enum FailureType {
   Failure_PinMismatch = 12,
   Failure_WipeCodeMismatch = 13,
   Failure_InvalidSession = 14,
-  Failure_FirmwareError = 99,
+  Failure_FirmwareError = 99
 }
 /**
  * Data to be sent to the other window.
@@ -33,7 +33,7 @@ export interface Message {
  *library type information
  */
 export interface LibInformation {
-  type: "chrome" | "firefox" | "website";
+  type: 'chrome' | 'firefox' | 'website';
   id?: string;
 }
 
@@ -41,19 +41,21 @@ export interface LibInformation {
  * List Command
  */
 export enum Command {
-  PING = "ping",
-  GET_ADDRESS = "get-address",
-  GET_PUBLICK_KEY = "get-publick-key",
-  SIGN_TRANSACTION = "sign-transaction",
-  INITIALIZE = "initialize",
-  CONNECT = "connect",
-  DISCONNECT = "disconnect",
+  PING = 'ping',
+  GET_ADDRESS = 'get-address',
+  GET_PUBLICK_KEY = 'get-publick-key',
+  SIGN_TRANSACTION = 'sign-transaction',
+  SIGN_MESSAGE = 'sign-message',
+  VERIFY_MESSAGE = 'verify-message',
+  INITIALIZE = 'initialize',
+  CONNECT = 'connect',
+  DISCONNECT = 'disconnect'
 }
 
 /**
  * Coin Type Support
  */
-export type CoinType = "Bitcoin" | "Ethereum";
+export type CoinType = 'Bitcoin' | 'Ethereum';
 
 /**
  * IGetAddress
@@ -63,7 +65,20 @@ export type CoinType = "Bitcoin" | "Ethereum";
 export interface ICoinParam {
   showOnProkey?: boolean;
   coin: CoinType;
-  path: [number, number, number, boolean, boolean?, number?] | string;
+  path: string;
+}
+export interface ICoinParamMessage {
+  showOnProkey?: boolean;
+  coin: CoinType;
+  path: string;
+  message: Uint8Array;
+}
+export interface ICoinParamVerifyMessage {
+  showOnProkey?: boolean;
+  coin: CoinType;
+  address: string;
+  message: Uint8Array;
+  signature: Uint8Array;
 }
 export interface ICoinTransactionParam {
   transaction: BitcoinTx | EthereumTx | RippleTransaction;
@@ -111,5 +126,24 @@ export interface ICoin {
     param: ICoinParam
   ): Promise<IGetPublickKeyResponse>;
 
+  /**
+   *
+   * @param device
+   * @param param
+   */
   SignTransaction(device: Device, param: ICoinTransactionParam): Promise<any>;
+
+  /**
+   * Sign Message
+   * @param device
+   * @param param
+   */
+  SignMessage(device: Device, param: ICoinParamMessage): Promise<any>;
+  
+  /**
+   * Verify Message
+   * @param device The prokey device
+   * @param param ICoinParamVerifyMessage
+   */
+  VerifyMessage(device: Device, param: ICoinParamVerifyMessage): Promise<any>;
 }

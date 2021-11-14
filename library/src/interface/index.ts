@@ -12,6 +12,8 @@ export enum Command {
     SIGN_TRANSACTION = 'sign-transaction',
     INITIALIZE = 'initialize',
     CONNECT = 'connect',
+    SIGN_MESSAGE = 'sign-message',
+    VERIFY_MESSAGE = 'verify-message',
 }
 
 /** Message is Data to be sent to the other window
@@ -39,20 +41,20 @@ export interface LibInformation {
 /** Coin type support */
 export type CoinType = 'Ethereum' | 'Bitcoin';
 
-/**  CoinPathParam 
+/**  CoinPathParam
  * @example
  * ```ts
  * const sample: CoinPathParam = {
- *      coinBip44: 60, 
+ *      coinBip44: 60,
  *      account: 0,
- *      numberOfAddress: 1, 
- *      isSegwit: false, 
- *      isChange: false, 
+ *      numberOfAddress: 1,
+ *      isSegwit: false,
+ *      isChange: false,
  *      startIndex: 0
  *  }
- * 
+ *
  * ```
-*/
+ */
 export interface CoinPathParam {
     coinBip44: number;
     /** Ethereum, each address is considered as an account */
@@ -119,3 +121,8 @@ export type EthereumTx = {
 
 /**  ICoinTransactionParam */
 export type ICoinTransactionParam = BitcoinTx | EthereumTx | RippleTransaction;
+
+export interface Manifest {
+    appUrl: string;
+    email: string;
+}

@@ -1,7 +1,7 @@
-import { Device, EthereumCommands } from "../libs/prokey-webcore";
-import { Features } from "../libs/prokey-webcore/dist/src/models/Prokey";
-import { Command, FailureType, ICoin, ICoinParam } from "./interface";
-import { Coin, EventEmitter, log } from "./utils";
+import { Device, EthereumCommands } from '../libs/prokey-webcore';
+import { Features } from '../libs/prokey-webcore/dist/src/models/Prokey';
+import { Command, FailureType, ICoin, ICoinParam } from './interface';
+import { Coin, EventEmitter, log } from './utils';
 
 /// Device manager class
 export class DeviceMgr extends EventEmitter {
@@ -14,14 +14,14 @@ export class DeviceMgr extends EventEmitter {
   constructor() {
     super();
     this.coin = new Coin();
-    this.on(Command.CONNECT, async (res) => { 
-      this._initialize = await this.initialize(); 
+    this.on(Command.CONNECT, async res => {
+      this._initialize = await this.initialize();
       this.responseMessage(Command.CONNECT, {
         response: this._initialize,
-        error: null,
+        error: null
       });
     });
-    this.on(Command.PING, async (res) => {
+    this.on(Command.PING, async res => {
       console.log(Command.PING);
       this.responseMessage(Command.PING, { response: true });
     });
@@ -29,14 +29,22 @@ export class DeviceMgr extends EventEmitter {
       const addresses = await this.getAddress(res);
       this.responseMessage(Command.GET_ADDRESS, { response: addresses });
     });
-    this.on(Command.GET_PUBLICK_KEY, async (res) => {
+    this.on(Command.SIGN_MESSAGE, async (res: any) => {
+      const response = await this.signMessage(res);
+      this.responseMessage(Command.SIGN_MESSAGE, response);
+    });
+    this.on(Command.VERIFY_MESSAGE, async (res: any) => {
+      const response = await this.verifyMessage(res);
+      this.responseMessage(Command.VERIFY_MESSAGE, response);
+    });
+    this.on(Command.GET_PUBLICK_KEY, async res => {
       const keys = await this.getPublickKey(res);
       this.responseMessage(Command.GET_PUBLICK_KEY, { response: keys });
     });
-    this.on(Command.SIGN_TRANSACTION, async (res) => {
+    this.on(Command.SIGN_TRANSACTION, async res => {
       const signTransaction = await this.signTransaction(res);
       this.responseMessage(Command.SIGN_TRANSACTION, {
-        response: signTransaction,
+        response: signTransaction
       });
     });
   }
@@ -45,31 +53,31 @@ export class DeviceMgr extends EventEmitter {
    * Connect to prokey
    * @returns
    */
-  async Connect() { 
+  async Connect() {
     if (!this._device) {
-      this._device = new Device((res) => { 
+      this._device = new Device(res => {
         this._connected = true;
         this.emit(Command.CONNECT);
       });
-      this._device.AddOnFailureCallBack((failureType) => {
+      this._device.AddOnFailureCallBack(failureType => {
         if (
           failureType &&
           failureType.code === FailureType.Failure_NotInitialized
         ) {
-          if (confirm("Device not initialized!!!.\n Pleas rebot now?")) {
+          if (confirm('Device not initialized!!!.\n Pleas rebot now?')) {
             this._device.RebootDevice();
           }
         }
-      }); 
+      });
       this._device.AddOnDeviceDisconnectCallBack(() => {
         this.emit(Command.DISCONNECT);
       });
-    }  
-    const res = await this._device.TransportConnect(); 
+    }
+    const res = await this._device.TransportConnect();
     if (!res.success) {
       this.responseMessage(Command.CONNECT, {
         connect: false,
-        error: res.errorMessage,
+        error: res.errorMessage
       });
       this._connected = false;
       throw new Error(res.errorMessage);
@@ -120,5 +128,23 @@ export class DeviceMgr extends EventEmitter {
    */
   signTransaction = (params: any) => {
     return this.coin.SignTransaction(this._device, params);
+  };
+
+  /**
+   * sign a Message
+   * @param device Prokey device instance
+   * @param bitcoinTransaction transaction to be signed
+   */
+  signMessage = (params: any) => {
+    console.log('SignMessage 139',params);
+    return this.coin.SignMessage(this._device, params);
+  };
+  /**
+   * sign a transaction
+   * @param device Prokey device instance
+   * @param bitcoinTransaction transaction to be signed
+   */
+  verifyMessage = (params: any) => {
+    return this.coin.VerifyMessage(this._device, params);
   };
 }

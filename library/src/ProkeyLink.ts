@@ -1,4 +1,4 @@
-import { CoinPathParam, CoinType, Command, ICoinTransactionParam, Message } from './interface';
+import { CoinPathParam, CoinType, Command, ICoinTransactionParam, Manifest, Message } from './interface';
 import { EventEmitter, initialWindow, log, sleep } from './utils';
 import { getInformationLib } from './utils/info';
 
@@ -18,6 +18,7 @@ export class ProkeyLink extends EventEmitter {
      * @description calls connectHardware in background
      */
     Connect = async () => {
+        console.log('prokey-link', 'Connect');
         const _window = initialWindow();
         await sleep(3000);
         this.initializeEvent(_window);
@@ -113,6 +114,12 @@ export class ProkeyLink extends EventEmitter {
      * ```
      */
     GetPublickKey = async (coin: CoinType, path: CoinPathParam | string, showOnProkey?: boolean) => {
+        console.log('prokey-link', {
+            command: Command.GET_PUBLICK_KEY,
+            coin,
+            showOnProkey,
+            path: typeof path === 'string' ? path : this.getPath(path),
+        });
         return await this.postMessage(Command.GET_PUBLICK_KEY, {
             coin,
             showOnProkey,
@@ -148,6 +155,21 @@ export class ProkeyLink extends EventEmitter {
         return await this.postMessage(Command.SIGN_TRANSACTION, {
             coin,
             transaction,
+        });
+    };
+    SignMessage = async (coin: CoinType, path: string, message: Uint8Array) => {
+        return await this.postMessage(Command.SIGN_MESSAGE, {
+            coin,
+            path,
+            message,
+        });
+    };
+    VerifyMessage = async (coin: CoinType, address: string, message: Uint8Array, signature: Uint8Array) => {
+        return await this.postMessage(Command.VERIFY_MESSAGE, {
+            coin,
+            address,
+            message,
+            signature,
         });
     };
     /**

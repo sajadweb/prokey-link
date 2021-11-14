@@ -1,13 +1,19 @@
-import { Device, EthereumCommands, BitcoinCommands } from "../../../libs/prokey-webcore";
+import {
+  Device,
+  EthereumCommands,
+  BitcoinCommands
+} from '../../../libs/prokey-webcore';
 import {
   ICoin,
   ICoinParam,
+  ICoinParamMessage,
+  ICoinParamVerifyMessage,
   ICoinTransactionParam,
   IGetAddressResponse,
-  IGetPublickKeyResponse,
-} from "../../interface";
-import * as PathUtil from "../../../libs/prokey-webcore/dist/src/utils/pathUtils";
-import { ICoinCommands } from "../../../libs/prokey-webcore/dist/src/device/ICoinCommand";
+  IGetPublickKeyResponse
+} from '../../interface';
+import * as PathUtil from '../../../libs/prokey-webcore/dist/src/utils/pathUtils';
+import { ICoinCommands } from '../../../libs/prokey-webcore/dist/src/device/ICoinCommand';
 declare function bind<T, U extends any[], V>(
   f: (x: T, ...args: U) => V,
   x: T
@@ -32,7 +38,7 @@ export class Coin implements ICoin {
   /**
    * SignTransaction
    * @param {Device} device
-   * @param {ICoinTransactionParam} param  
+   * @param {ICoinTransactionParam} param
    * @returns
    */
   async SignTransaction(
@@ -45,12 +51,12 @@ export class Coin implements ICoin {
       const message = await coin.SignTransaction(device, transaction);
       return {
         error: false,
-        message,
+        message
       };
     } catch (error) {
       return {
         error: true,
-        message: error?.message,
+        message: error?.message
       };
     }
   }
@@ -68,30 +74,25 @@ export class Coin implements ICoin {
     try {
       const coin = this[param.coin];
       const args = param.path;
-      let path: any;
-      if (typeof args === "string") {
-        path = PathUtil.getHDPath(args);
-      } else {
-        const list = PathUtil.GetListOfBipPath(...args);
-        path = list[0].path;
-      }
-      return new Promise(async (resolve) => {
+      let path = PathUtil.getHDPath(args);
+      
+      return new Promise(async resolve => {
         if (!device) {
           return resolve({
             error: true,
-            message: "Device not initialized",
+            message: 'Device not initialized'
           });
         }
         const addr = await coin.GetAddress(device, path, param.showOnProkey);
         return resolve({
           error: false,
-          message: addr,
+          message: addr
         });
       });
     } catch (error) {
       return {
         error: true,
-        message: error?.message,
+        message: error?.message
       };
     }
   }
@@ -107,25 +108,58 @@ export class Coin implements ICoin {
   ): Promise<IGetPublickKeyResponse> {
     const coin = this[param.coin];
     const args = param.path;
-    let path: any;
-    if (typeof args === "string") {
-      path = PathUtil.getHDPath(args);
-    } else {
-      const list = PathUtil.GetListOfBipPath(...args);
-      path = list[0].path;
-    }
-    return new Promise(async (resolve) => {
+    let path = PathUtil.getHDPath(args);
+
+    return new Promise(async resolve => {
       if (!device) {
         return resolve({
           error: true,
-          message: "Device not initialized",
+          message: 'Device not initialized'
         });
       }
       const keys = await coin.GetPublicKey(device, path, param.showOnProkey);
       return resolve({
         error: false,
-        message: keys,
+        message: keys
       });
     });
+  }
+
+  /**
+   * Sign Message
+   * @param device The prokey device
+   * @param param ICoinParamMessage
+   */
+  async SignMessage(device: Device, param: ICoinParamMessage): Promise<any> {
+    const coin = this[param?.coin];
+    console.log('Message 135-class',param)
+    const path = PathUtil.getHDPath(param.path);
+
+    const response = await coin.SignMessage(device, path, param.message);
+    if (response) {
+      return { error: false, message: response };
+    }
+    return { error: true };
+  }
+  /**
+   * Verify Message
+   * @param device The prokey device
+   * @param param ICoinParamVerifyMessage
+   */
+  async VerifyMessage(
+    device: Device,
+    param: ICoinParamVerifyMessage
+  ): Promise<any> {
+    const coin = this[param?.coin];
+    const response = await coin.VerifyMessage(
+      device,
+      param.address,
+      param.message,
+      param.signature
+    );
+    if (response) {
+      return { error: false, message: response };
+    }
+    return { error: true };
   }
 }
