@@ -106,7 +106,7 @@ class ProkeyKeyring extends EventEmitter {
       this.connect().then(() => {
         //now prokey is connected
         this.getPublickKey()
-          .then(({ response }) => {
+          .then((response) => {
             console.log(LOG, response.message.node.public_key)
             //get public key
             this.hdk.publicKey = Buffer.from(response.message.node.public_key);
@@ -309,7 +309,7 @@ class ProkeyKeyring extends EventEmitter {
       const response = (await this.prokey.SignTransaction(
         Ethereum,
         EthereumTx,
-      ))?.response;
+      ));
       if (!response?.error) {
         const payload = response?.message;
         const newOrMutatedTx = handleSigning(payload);

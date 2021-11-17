@@ -17,17 +17,16 @@ export class DeviceMgr extends EventEmitter {
     this.on(Command.CONNECT, async res => {
       this._initialize = await this.initialize();
       this.responseMessage(Command.CONNECT, {
-        response: this._initialize,
-        error: null
+        message: this._initialize,
+        error: false
       });
     });
     this.on(Command.PING, async res => {
-      console.log(Command.PING);
-      this.responseMessage(Command.PING, { response: true });
+      this.responseMessage(Command.PING, true);
     });
     this.on(Command.GET_ADDRESS, async (res: any) => {
-      const addresses = await this.getAddress(res);
-      this.responseMessage(Command.GET_ADDRESS, { response: addresses });
+      const response = await this.getAddress(res);
+      this.responseMessage(Command.GET_ADDRESS, response);
     });
     this.on(Command.SIGN_MESSAGE, async (res: any) => {
       const response = await this.signMessage(res);
@@ -38,14 +37,12 @@ export class DeviceMgr extends EventEmitter {
       this.responseMessage(Command.VERIFY_MESSAGE, response);
     });
     this.on(Command.GET_PUBLICK_KEY, async res => {
-      const keys = await this.getPublickKey(res);
-      this.responseMessage(Command.GET_PUBLICK_KEY, { response: keys });
+      const response = await this.getPublickKey(res);
+      this.responseMessage(Command.GET_PUBLICK_KEY,response);
     });
     this.on(Command.SIGN_TRANSACTION, async res => {
-      const signTransaction = await this.signTransaction(res);
-      this.responseMessage(Command.SIGN_TRANSACTION, {
-        response: signTransaction
-      });
+      const response = await this.signTransaction(res);
+      this.responseMessage(Command.SIGN_TRANSACTION, response);
     });
   }
 
@@ -136,7 +133,6 @@ export class DeviceMgr extends EventEmitter {
    * @param bitcoinTransaction transaction to be signed
    */
   signMessage = (params: any) => {
-    console.log('SignMessage 139',params);
     return this.coin.SignMessage(this._device, params);
   };
   /**

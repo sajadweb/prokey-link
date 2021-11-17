@@ -18,7 +18,6 @@ export class ProkeyLink extends EventEmitter {
      * @description calls connectHardware in background
      */
     Connect = async () => {
-        console.log('prokey-link', 'Connect');
         const _window = initialWindow();
         await sleep(3000);
         this.initializeEvent(_window);

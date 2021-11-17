@@ -132,9 +132,7 @@ export class Coin implements ICoin {
    */
   async SignMessage(device: Device, param: ICoinParamMessage): Promise<any> {
     const coin = this[param?.coin];
-    console.log('Message 135-class',param)
     const path = PathUtil.getHDPath(param.path);
-
     const response = await coin.SignMessage(device, path, param.message);
     if (response) {
       return { error: false, message: response };
