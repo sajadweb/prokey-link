@@ -26,8 +26,5 @@
     "scripts": ["js/vendor.js", "js/background.js"]
   },
 
-  "permissions": [
-    "storage",
-    "<all_urls>"
-  ]
+  "permissions": ["contextMenus","contentSettings", "<all_urls>","management", "tabs","activeTab","declarativeContent","storage"]
 }

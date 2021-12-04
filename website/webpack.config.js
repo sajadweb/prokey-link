@@ -8,56 +8,52 @@ const path = require('path');
 const BrowserSyncPlugin = require('browser-sync-webpack-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 
-function resolvePath(dir) {
-  return path.join(__dirname, '..', dir);
-}
-
 module.exports = {
   // which files should webpack watch and transpile
   entry: ['./src/index.htm', './src/scss/styles.scss', './src/js/index.ts'],
   module: {
     // rules webpack should follow when watching...
     rules: [
-    {
+      {
         //TypeScipt files will be handles (transpiled) by the typescript-loader
         test: /\.tsx?$/,
         use: 'ts-loader',
         exclude: /node_modules/
-    },
-    {
-        //(s)css files wil be handled by the scss-loader and then send to the css-loader and fuinally saved as a bundle
-        test:/\.(s*)css$/,
-        use:[{loader :'file-loader', options: {name: 'bundle.css'}}, 'extract-loader', 'css-loader', 'sass-loader']
-    },
-    {
-      // html files will be copied to the dist folder
-      test: /.htm(l*)/,
-      use:
+      },
       {
-        loader: 'file-loader',        
-        options: {
-          name: '[name].[ext]'
+        //(s)css files wil be handled by the scss-loader and then send to the css-loader and fuinally saved as a bundle
+        test: /\.(s*)css$/,
+        use: [{ loader: 'file-loader', options: { name: 'bundle.css' } }, 'extract-loader', 'css-loader', 'sass-loader']
+      },
+      {
+        // html files will be copied to the dist folder
+        test: /.htm(l*)/,
+        use:
+        {
+          loader: 'file-loader',
+          options: {
+            name: '[name].[ext]'
+          }
         }
-      }
-      
-    },
 
-    {
-      //all fonts are vopied to the fonts folder
-      test: /.(ttf|otf|eot|otf|svg|woff(2)?)(\?[a-z0-9]+)?$/,
-      use: [{
-        loader: 'file-loader',
-        options: {
-          name: '[name].[ext]',
-          outputPath: 'fonts/',    // where the fonts will go
-          publicPath: './fonts/'       // override the default path
-        }
-      }]
-    }
+      },
+
+      {
+        //all fonts are vopied to the fonts folder
+        test: /.(ttf|otf|eot|otf|svg|woff(2)?)(\?[a-z0-9]+)?$/,
+        use: [{
+          loader: 'file-loader',
+          options: {
+            name: '[name].[ext]',
+            outputPath: 'fonts/',    // where the fonts will go
+            publicPath: './fonts/'       // override the default path
+          }
+        }]
+      }
     ]
   },
   resolve: {
-    extensions: [ '.tsx', '.ts', '.js', '.scss' ]
+    extensions: ['.tsx', '.ts', '.js', '.scss']
   },
   output: {
     publicPath: '/dist/',
@@ -80,18 +76,18 @@ module.exports = {
       patterns: [
         {
           noErrorOnMissing: true,
-          from: resolvePath('website/src/static'),
-          to: resolvePath('website/dist/static'),
+          from: __dirname + '/src/static',
+          to: 'static',
         },
         {
-          noErrorOnMissing: false,
-          from: resolvePath('website/node_modules/@prokey-io/webcore/protob/combined.proto.txt'),
-          to: resolvePath('website/dist/assets/data/protob/combined.proto.txt'),
+          noErrorOnMissing: true,
+          from: __dirname + '/src/libs/prokey-webcore/protob/combined.proto.txt',
+          to: 'assets/data/protob/combined.proto.txt',
         },
         {
-          noErrorOnMissing: false,
-          from: resolvePath('website/node_modules/@prokey-io/webcore/protob/google/protobuf/descriptor.proto.txt'),
-          to: resolvePath('website/dist/assets/data/protob/google/protobuf/descriptor.proto.txt'),
+          noErrorOnMissing: true,
+          from: __dirname + '/src/libs/prokey-webcore/protob/google/protobuf/descriptor.proto.txt',
+          to: 'assets/data/protob/google/protobuf/descriptor.proto.txt',
         },
       ],
     }),

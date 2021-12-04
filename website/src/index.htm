@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="en-US">
+
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>Prokey Link</title>
@@ -7,13 +8,28 @@
 </head>
 
 <body>
-  <h1>Prokey link</h1>
-  <h2>Connect to your prokey</h2>  
-  <div id="content">
-    <button id="connect_button">Connect Now</button>
-  </div>
-    
+  <main>
+    <aside>
+      <h3>Connect your Prokey</h3>
+      <h5>Please connect your prokey to your computer/mobile, press "Connect Now" button to connect it to browser.</h5>
+      <div id="content" class="connectpk">
+        <button class="btn checkbutton" id="connect_button">Connect Now</button>
+      </div>
+      <div class="alert alert-primary linuxmsg">
+        <p> Please make sure experimental USB backend in your chromium settings is disabled. <a
+            href="https://support.prokey.io/help-center/articles/1/6/15/disable-experimental-usb-backend-on-chrome-based-browsers"
+            target="_blank">Read more</a></p>
+      </div>
+    </aside>
+    <section>
+      <img alt="connect your wallet" height="auto" src="static/entry.png" title="" width="100%" />
+      <p>Don't have a Prokey? Get it <a href="https://prokey.io/prokey-optimum">here</a></p>
+    </section>
+  </main>
+
+
+
   <script src="bundle.js"></script>
 </body>
+
 </html>
- 
